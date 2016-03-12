@@ -4,16 +4,18 @@
 using CP;
 
 /*** Données du problème  ***/
-range n = 0..8;
-
+int taille = 8;
+range n = 1..taille;
 // Variables du domaine
 dvar int matrice[n][n] in 0..1;
-dvar int nb_queens in n;
 
-//faire tableau de N premières valeurs pour les lgines, N suivantes pour les colonnes
+
+
 
 execute{
+   cp.param.searchType = "DepthFirst";
    cp.param.workers = 1;
+    
 }
 
 minimize
@@ -23,19 +25,51 @@ minimize
 
 
 subject to{
-             forall(j,k in n : j<k){
-                 forall(w,p in n : j<k){
-                  matrice[j][w] != matrice[j][p]; // check if line is correct
-                  matrice[j][w] != matrice[k][w];
-                  abs(matrice[j]-matrice[k]) != abs(matrice[j]-matrice[k]) 
-                  
-               }
+            
+      forall(j in n ){
+          forall(i in n ){
+              
+             (sum(w in n) matrice[j][w] ==1)  ||(sum(p in n) matrice[p][i] ==1) || (sum(k in n) sum(z in n : abs(j-k) == abs(i-z)) matrice[k][z]) ==1;
+
+               
            }
+      } 
+      
+
+/*
+Depth first :
+
+! ----------------------------------------------------------------------------
+ ! Search terminated normally, 1 solution found.
+ ! Best objective         : 5 (optimal - effective tol. is 0)
+ ! Number of branches     : 491,610
+ ! Number of fails        : 245,805
+ ! Total memory usage     : 1.7 MB (1.3 MB CP Optimizer + 0.4 MB Concert)
+ ! Time spent in solve    : 12.70s (12.68s engine + 0.01s extraction)
+ ! Search speed (br. / s) : 38,770.5
+ ! ----------------------------------------------------------------------------
+
+<<< solve
+
+
+OBJECTIVE: 5
+Matrice [[0 0 1 0 0 0 0 0]
+         [0 1 0 0 0 0 0 0]
+         [1 0 0 0 0 0 0 0]
+         [0 0 0 0 0 0 0 0]
+         [0 0 0 0 0 0 0 0]
+         [0 0 0 0 0 0 0 0]
+         [0 0 0 0 0 0 0 1]
+         [0 0 0 0 0 0 1 0]]
+<<< post process
+
+
+
+*/
+
         
 }
 
 execute{
-   write("Nb queens", nb_queens);
    write("Matrice", matrice)
 }
-
